@@ -71,16 +71,17 @@ def send_msg(msg):
 while(True):
     # setup log files
     log=open('log.csv', 'a')
-    log.write("DEVICE %d HERE" % _DEVICE_ID)
-    log.write(time())
+    #log.write("DEVICE %d HERE" % _DEVICE_ID)
+    #log.write(time())
     success = send_msg("DEVICE %d HERE" % _DEVICE_ID)
     if (success):
-
+        #log.write('')
+        #log.write(time())
         print("ACK RECEIVED: %d" % msg_id)
         increase_msg_id()
     else:
-        log.write('failure')
-        log.write(time())
+        #log.write('failure')
+        #log.write(time())
         print("MESSAGE FAILED")
         # Manage the error message
 
