@@ -2,7 +2,6 @@ from network import LoRa
 import socket
 import ubinascii
 import time
-pycom.heartbeat(False)
 lora = LoRa(mode=LoRa.LORAWAN, region=LoRa.US915)
 app_eui = ubinascii.unhexlify('00250C0000010001')
 app_key = ubinascii.unhexlify('')#put the right value here.
