@@ -1,64 +1,71 @@
-from network import LoRa
-import socket
-import ubinascii
-import time
-import serial
-#Setting up LoRA connection
-lora = LoRa(mode=LoRa.LORAWAN, region=LoRa.US915)
-app_eui = ubinascii.unhexlify('00250C0000010001')
-app_key = ubinascii.unhexlify('')#put the right value here.
-while not lora.has_joined():
-    time.sleep(2)
-    print('Not yet joined...')
-print('Joined')
-LoRA_connection = socket.socket(socket.AF_LORA, socket.SOCK_RAW)
-LoRA_connection.setsockopt(socket.SOL_LORA, socket.SO_DR, 4)
 #Global Variables
-drone_serialport = 0
+latitude = 0
 longitude = 0
-latitude 0
 altitude = 0
-#Function to Initialize the Serial Port
-def init_serial():
-    drone_serialport = serial.Serial("/dev/cu.usbmodemPy99b4b31")
-    drone_serialport.baudrate= 115200
-    drone_serialport.port= '/dev/cu.usbmodemPy99b4b31'
-    drone_serialport.timeout=0
-    #Specify the TimeOut in seconds, so that SerialPort
-    #Doesn't hangs
-    drone_serialport.open()          #Opens SerialPort
-    # print port open or closed
-    if drone_serialport.isOpen():
-        print 'Open: ' + drone_serialport.name
-#Function Ends Here
-#Call the Serial Initilization Function, Main Program Starts from here
-init_serial()
 
-buffer_receive = drone_serialport.read(500) #Reads to the SerialPort
-buffer_receive_convert = map(float, buffer_receive.split(' , '))
-# Splitting the string list into a float list ^^^
-latitude = buffer_receive_convert(0)
-longitude = buffer_receive_convert(1)
-altitude = buffer_receive_convert(2)
+#*************************
+#Drone <-> LoPy Connection
+#*************************
+buffer_receive_uart = ""    #Do I need these declared outside of functions to stay in scope?
+buffer_send_lora = []
 
-sending_buffer = [latitude,longitude,altitude] #sending an array of float variables to CloudControl
-LoRA_connection.send(sending_buffer) # sending the buffer of GPS points
+def receive_uart_data():
+    buffer_receive_uart = drone_uart.readall()
+    latitude,longitude,altitude = buffer_receive_uart.split(",")
+    buffer_send_lora = [latitude,longitude,altitude]    #Packetize for send_lora_data
 
-#We have to figure out how to keep looking for information and
-#once we see the information break out of it
-received_instructions = LoRA_connection.recv(500)
-drone_serialport.write(received_instructions) #Writes to the SerialPort
+def send_uart_data():
+    drone_uart.write(buffer_send_uart)   #Will this just be a hand off of buffer_send_uart, or an interpretation of the command?
 
 
+#*************************
+#Cloud <-> LoPy Connection
+#*************************
+buffer_receive_lora = ""    #Determine type
+buffer_send_uart = []
+
+def recieve_lora_data():
+    s.setblocking(False)    #Do I need to set this again if send_lora_data --> False
+    buffer_send_uart = s.recv(128)  #Determine size
 
 
-    #sample code for UART connection
-#from machine import UART
-#uart = UART(1, 9600)                         # init with given baudrate
-#uart.init(9600, bits=8, parity=None, stop=1) # init with given parameters
-#while True:
-#    data = uart.readall()
-#    if data is not None:
-#       print(data)
-#       break
-#Ctrl+C to Close Python Window
+def send_lora_data():
+    s.setblocking(True)    #Block in order to send data
+    s.send(buffer_send_lora)    #Need loop with s.send(buffer_send_lora[i])?
+    s.setblocking(False)    #Listen by default
+
+
+#*************************
+#Cloud Command Definitions
+#*************************
+
+#I believe this would actually be on the drone
+
+
+#*****************
+#Looping Structure
+#*****************
+
+#IN DEVELOPMENT
+# while True:
+#     i = 0
+#     while i < 5:
+#         receive_uart_data()
+#         i += 1
+#
+#     send_lora_data()
+#
+#     j = 0
+#     while j < 5:
+#         recieve_lora_data()
+#         j += 1
+#
+#     send_uart_data()
+
+#TEST
+for i in range(100):
+    s.setblocking(True)
+    something = drone_uart.readall()
+    s.send(str(something))
+    time.sleep(1)
+
