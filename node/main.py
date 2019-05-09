@@ -44,7 +44,7 @@ def sendLora(buffer_send_lora):
 while True:
     buffer_send_lora = receiveUart()    #Check for new message from drone
     if(buffer_send_lora != None):   #If there was data received, send over LoRa
-        sendLora(buffer_send_lora)
+        sendLora(buffer_send_lora[:27])
     #    sendUart("00\r\r\n\n") #Successfully set No Fly Zone
         sendUart("142.99913982-78.7773250\r\r\n\n")
     #buffer_send_uart = receiveLora()    #Pull in data from Lora buffer
