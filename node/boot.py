@@ -13,7 +13,7 @@ drone_uart = UART(0,115200)
 #COMMENTED OUT SINCE NO ANTENNA
 pycom.heartbeat(False)     #No heartbeat on boot
 lora = LoRa(mode=LoRa.LORAWAN, power_mode= LoRa.ALWAYS_ON, region=LoRa.US915)
-lora.init(mode=LoRa.LORAWAN, adr=False, public=True, tx_retries=0, device_class=LoRa.CLASS_C)
+lora.init(mode=LoRa.LORAWAN, adr=False, public=True, tx_retries=0, device_class=LoRa.CLASS_A)
 app_eui = ubinascii.unhexlify('00250C000100021E')
 app_key = ubinascii.unhexlify('3C660D6DBFCA6B02BBF6189CD23B6E28')     #put the right value here.
 lora.join(activation=LoRa.OTAA, auth=(app_eui, app_key), timeout=0)
