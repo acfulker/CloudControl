@@ -46,8 +46,8 @@ while True:
     if(buffer_send_lora != None and buffer_send_lora != "00000000nan00000000nan000"):   #If there was data received, send over LoRa
         sendLora(buffer_send_lora[:27])
         #sendUart("00\r\r\n\n") #Successfully set No Fly Zone
-        sendUart("143.00041800-78.7768390\r\r\n\n")#Successfully set Fly Zone
-    #buffer_send_uart = receiveLora()    #Pull in data from Lora buffer
-    # if(str(buffer_send_uart) != "b''"):   #If not empty buffer, send message to drone
-    #     sendUart(buffer_send_uart)
-#     sendUart("\n")
+        #sendUart("143.00041800-78.7768390\r\r\n\n")#Successfully set Fly Zone
+        buffer_send_uart = receiveLora()    #Pull in data from Lora buffer
+    if(str(buffer_send_uart) != "b''"):   #If not empty buffer, send message to drone
+      sendUart(buffer_send_uart)
+      sendUart("\n")
